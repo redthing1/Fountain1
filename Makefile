@@ -36,13 +36,16 @@ MAP_DATA      := $(shell find $(DATA_DIR) -name '*.bin')
 
 # Build commands and dependencies
 
-build : libs $(NAME).gba
+build: libs $(NAME).gba
 
-no-content : libs $(NAME)-no_content.gba
+no-content: libs $(NAME)-no_content.gba
 
 libs:
 	cd lib/gbaMap && make 
 	cd lib/gbfs && make
+
+assets:
+	cd asset/build && make
 
 $(NAME).gba : $(NAME)-no_content.gba $(NAME).gbfs
 	cat $^ > $(NAME).gba
