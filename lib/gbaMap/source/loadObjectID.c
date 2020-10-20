@@ -1,4 +1,4 @@
-#include "mapObject.h"
+#include "gbamap_object.h"
 #include "./types.h"
 
 u32 loadObjectID(const u16* idData, u16* index) {

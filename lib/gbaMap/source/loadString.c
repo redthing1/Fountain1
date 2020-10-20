@@ -1,4 +1,4 @@
-#include "mapObject.h"
+#include "gbamap_object.h"
 #include "./types.h"
 
 const char* loadString(const u16* stringData, u16* index) {

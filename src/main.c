@@ -1,5 +1,5 @@
 #include <string.h>
-#include "map.h"
+#include "gbamap.h"
 #include <tonc.h>
 #include "input.h"
 #include "gbfs.h"

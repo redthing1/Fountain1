@@ -1,4 +1,4 @@
-#include "mapObject.h"
+#include "gbamap_object.h"
 #include "./types.h"
 
 void shiftMapObjects(MapObject* objects, ObjectPoint shift, u32 count)

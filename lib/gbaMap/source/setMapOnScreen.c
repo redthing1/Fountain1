@@ -1,5 +1,5 @@
 #include "./background.h"
-#include "map.h"
+#include "gbamap.h"
 #include <string.h>
 
 void setMapOnScreen(Map map) {

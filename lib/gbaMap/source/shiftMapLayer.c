@@ -1,5 +1,5 @@
 #include "./background.h"
-#include "map.h"
+#include "gbamap.h"
 
 void shiftMapLayer(u16 layer, BackgroundPoint offset)
 {

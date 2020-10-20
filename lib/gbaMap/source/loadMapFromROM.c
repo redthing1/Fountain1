@@ -1,4 +1,4 @@
-#include "map.h"
+#include "gbamap.h"
 #include <string.h>
 #include "./types.h"
 

@@ -1,4 +1,4 @@
-#include "mapObject.h"
+#include "gbamap_object.h"
 #include "./types.h"
 
 MapObject loadObject(const u16* objectData, u16* index) {

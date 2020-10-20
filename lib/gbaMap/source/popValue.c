@@ -1,4 +1,4 @@
-#include "mapObject.h"
+#include "gbamap_object.h"
 #include "./types.h"
 
 u16 popValue(const u16* data, u16* index) {

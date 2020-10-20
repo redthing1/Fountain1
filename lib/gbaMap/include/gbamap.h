@@ -1,7 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "mapObject.h"
+#include "gbamap_object.h"
 
 typedef struct {
     unsigned short sizeFlag,
