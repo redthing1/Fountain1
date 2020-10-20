@@ -12,9 +12,10 @@ all: $(MAPS_BIN) $(IMGS_BIN)
 
 clean:
 	rm -rfv *.bin
+	rm -rfv *.h
 
 $(MAPS_BIN): $(MAPS_SRC)
 	Tiled2GBA -b $< $@
 
 $(IMGS_BIN): $(IMGS_SRC)
-	grit $< -p -g -gb -ftb -fh! -o $@
+	grit $< -gt -p -g -gB 8 -ftb -o $@
