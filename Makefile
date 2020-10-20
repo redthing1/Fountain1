@@ -32,7 +32,6 @@ APP_MAIN_SOURCE := $(shell find $(SOURCE_DIR) -name '*main.c')
 APP_MAIN_OBJECT := $(APP_MAIN_SOURCE:%.c=%.o)
 APP_SOURCES     := $(shell find $(SOURCE_DIR) -name '*.c' ! -name "*main.c"  ! -name "*.test.c")
 APP_OBJECTS     := $(APP_SOURCES:%.c=%.o)
-MAP_DATA      := $(shell find $(DATA_DIR) -name '*.bin')
 
 # Build commands and dependencies
 
@@ -64,10 +63,10 @@ $(APP_OBJECTS) : %.o : %.c
 $(APP_MAIN_OBJECT) : $(APP_MAIN_SOURCE)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME).gbfs : $(MAP_DATA)
-	gbfs $@ $^
+$(NAME).gbfs: assets
+	gbfs $@ $(shell find $(DATA_DIR) -name '*.bin')
 
-clean :
+clean:
 	@rm -fv *.gba
 	@rm -fv *.elf
 	@rm -fv *.sav
@@ -76,4 +75,4 @@ clean :
 	@rm -rf $(APP_MAIN_OBJECT)
 	cd lib/gbaMap && make clean
 	cd lib/gbfs && make clean
-
+	cd asset/build && make clean

@@ -8,7 +8,7 @@ MAPS_BIN := $(notdir $(MAPS_SRC:%.tmx=%.bin))
 all: $(MAPS_BIN)
 
 clean:
-	rm -rv *.bin
+	rm -rfv *.bin
 
 $(MAPS_BIN): $(MAPS_SRC)
 	Tiled2GBA -b $< $@
