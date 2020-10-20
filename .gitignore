@@ -1,3 +1,8 @@
+# GBA outputs
+*.gba
+*.gbfs
+*.sav
+
 # ---> C
 # Prerequisites
 *.d
