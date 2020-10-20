@@ -17,4 +17,4 @@ $(MAPS_BIN): $(MAPS_SRC)
 	Tiled2GBA -b $< $@
 
 $(IMGS_BIN): $(IMGS_SRC)
-	grit $< -ftb -fh! -o $@
+	grit $< -p -g -gb -ftb -fh! -o $@
