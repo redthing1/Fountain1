@@ -2,7 +2,7 @@ PATH := $(DEVKITARM)/bin:$(PATH)
 
 #  Project settings
 
-NAME       := MapPlayer
+NAME       := Fountain
 SOURCE_DIR := src
 LIB_DIR    := lib
 DATA_DIR   := asset
