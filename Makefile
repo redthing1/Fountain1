@@ -18,8 +18,8 @@ OBJCOPY	:= $(CROSS)objcopy
 
 ARCH	:= -mthumb-interwork -mthumb
 
-INCFLAGS := -I$(LIB_DIR)/gbfs/include -I$(LIB_DIR)/gbaMap/include
-LIBFLAGS := -ltonc -L$(LIB_DIR)/gbfs/lib -lgbfs -L$(LIB_DIR)/gbaMap/lib -lgbaMap
+INCFLAGS := -I$(DEVKITPRO)/libtonc/include -I$(LIB_DIR)/gbfs/include -I$(LIB_DIR)/gbaMap/include
+LIBFLAGS := -L$(DEVKITPRO)/libtonc/lib -ltonc -L$(LIB_DIR)/gbfs/lib -lgbfs -L$(LIB_DIR)/gbaMap/lib -lgbaMap
 ASFLAGS	:= -mthumb-interwork
 CFLAGS	:= $(ARCH) -O2 -Wall -fno-strict-aliasing $(INCFLAGS) $(LIBFLAGS)
 LDFLAGS	:= $(ARCH) $(SPECS) $(LIBFLAGS)
