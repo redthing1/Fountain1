@@ -2,7 +2,6 @@
 #include <tonc.h>
 #include "gbfs.h"
 #include "gbamap.h"
-#include "input.h"
 
 OBJ_ATTR obj_buffer[128];
 OBJ_AFFINE *obj_aff_buffer = (OBJ_AFFINE *)obj_buffer;
@@ -51,9 +50,9 @@ int main()
         vid_vsync();
         frames++;
 
-        KeyState input_st = getinput_st();
-        int ymove = get_y_axis(input_st);
-        int xmove = get_x_axis(input_st);
+        key_poll();
+        int ymove = key_tri_vert();
+        int xmove = key_tri_horz();
         bg_shift.y += ymove * SHIFT_SPEED;
         bg_shift.x += xmove * SHIFT_SPEED;
         map_shift(map, bg_shift);
