@@ -4,29 +4,45 @@
 #include "input.h"
 #include "gbfs.h"
 
+OBJ_ATTR obj_buffer[128];
+const GBFS_FILE *gbfs_dat;
+
 Map loadMap()
 {
     u32 mapDataSize = 0;
-    const GBFS_FILE *mapFile = find_first_gbfs_file(find_first_gbfs_file);
-    const u16 *mapData = gbfs_get_obj(mapFile, "fountain.bin", &mapDataSize);
+    const u16 *mapData = gbfs_get_obj(gbfs_dat, "fountain.bin", &mapDataSize);
 
     return loadMapFromROM(mapData);
 }
 
 int main()
 {
+    gbfs_dat = find_first_gbfs_file(find_first_gbfs_file);
+
     initMapRegisters();
     Map map = loadMap();
     setMapOnScreen(map);
 
-    // loadSpriteSheet();
-    // OBJ_ATTR spriteObjects[128];
-    // initializeSpriteObjectMemory(spriteObjects, 128);
-    // showMapObjects(&map, spriteObjects);
-    // setSpritesOnScreen();
+    oam_init(obj_buffer, 128);
+    REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D;
 
-    const int SHIFT_SPEED = 2;
-    BackgroundPoint backgroundShift = {0, 0};
+    u32 eggcat_img_len;
+    const u32 *eggcat_img = gbfs_get_obj(gbfs_dat, "egg.img.bin", &eggcat_img_len);
+    u32 eggcat_pal_len;
+    const u32 *eggcat_pal = gbfs_get_obj(gbfs_dat, "egg.pal.bin", &eggcat_pal_len);
+    memcpy(&tile_mem[4][0], eggcat_img, eggcat_img_len);
+    memcpy(pal_obj_mem, eggcat_pal, eggcat_pal_len);
+
+    int px = SCREEN_WIDTH / 2 - 8, py = SCREEN_HEIGHT / 2 - 8;
+    u32 tid = 0, pb = 0;
+    OBJ_ATTR *player = &obj_buffer[0];
+    obj_set_attr(player,
+                 ATTR0_SQUARE,             // Square, regular sprite
+                 ATTR1_SIZE_16,            // 16x16p,
+                 ATTR2_PALBANK(pb) | tid); // palbank 0, tile 0
+
+    const int SHIFT_SPEED = 1;
+    BackgroundPoint backgroundShift = {128, 248};
     while (TRUE)
     {
         vid_vsync();
@@ -36,10 +52,7 @@ int main()
         backgroundShift.x += getXAxis(inputState) * SHIFT_SPEED;
         shiftMap(map, backgroundShift);
 
-        ObjectPoint objectShift = {0, 0};
-        objectShift.x = getXAxis(inputState) * SHIFT_SPEED;
-        objectShift.y = getYAxis(inputState) * SHIFT_SPEED;
-        shiftMapObjects(map.objects, objectShift, map.numObjects);
-        // showMapObjects(&map, spriteObjects);
+        obj_set_pos(player, px, py);
+        oam_copy(oam_mem, obj_buffer, 1); // only need to update one
     }
 }
