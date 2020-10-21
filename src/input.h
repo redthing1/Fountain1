@@ -29,7 +29,7 @@ typedef u16 KeyState;
 /**
  * Get the current state of all keys.
  **/
-INLINE KeyState getInputState()
+INLINE KeyState get_input_state()
 {
     return ~REG_KEYINPUT & KEY_MASK;
 }
@@ -37,7 +37,7 @@ INLINE KeyState getInputState()
 /**
  * Convert two keys into a range of (-1, 1).
  **/
-INLINE int flagsToTribool(KeyState flags, KeyIndex minus, KeyIndex plus)
+INLINE int flags_to_tribool(KeyState flags, KeyIndex minus, KeyIndex plus)
 {
     return ((flags>>plus)&1) - ((flags>>minus)&1);
 }
@@ -46,18 +46,18 @@ INLINE int flagsToTribool(KeyState flags, KeyIndex minus, KeyIndex plus)
  * Get the X-axis value of the arrow pad.
  * -1 is for left, +1 is for right.
  **/
-INLINE int getXAxis(KeyState keyState)
+INLINE int get_x_axis(KeyState keyState)
 {
-    return flagsToTribool(keyState, KEY_INDEX_LEFT, KEY_INDEX_RIGHT);
+    return flags_to_tribool(keyState, KEY_INDEX_LEFT, KEY_INDEX_RIGHT);
 }
 
 /**
  * Get the Y-axis value of the arrow pad.
  * -1 is for up, +1 is for down.
  **/
-INLINE int getYAxis(KeyState keyState)
+INLINE int get_y_axis(KeyState keyState)
 {
-    return flagsToTribool(keyState, KEY_INDEX_UP, KEY_INDEX_DOWN);
+    return flags_to_tribool(keyState, KEY_INDEX_UP, KEY_INDEX_DOWN);
 }
 
 #endif // INPUT_H

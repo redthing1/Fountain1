@@ -1,17 +1,17 @@
 #include <string.h>
-#include "gbamap.h"
 #include <tonc.h>
-#include "input.h"
 #include "gbfs.h"
+#include "gbamap.h"
+#include "input.h"
 
 OBJ_ATTR obj_buffer[128];
 OBJ_AFFINE *obj_aff_buffer = (OBJ_AFFINE *)obj_buffer;
 const GBFS_FILE *gbfs_dat;
 
-Map loadMap()
+Map load_map()
 {
-    u32 mapDataSize = 0;
-    const u16 *map_data = gbfs_get_obj(gbfs_dat, "fountain.bin", &mapDataSize);
+    u32 map_data_sz = 0;
+    const u16 *map_data = gbfs_get_obj(gbfs_dat, "fountain.bin", &map_data_sz);
 
     return map_load_from_rom(map_data);
 }
@@ -21,7 +21,7 @@ int main()
     gbfs_dat = find_first_gbfs_file(find_first_gbfs_file);
 
     map_init_registers();
-    Map map = loadMap();
+    Map map = load_map();
     map_set_onscreen(map);
 
     oam_init(obj_buffer, 128);
@@ -43,7 +43,7 @@ int main()
                  ATTR2_PALBANK(pb) | tid); // palbank 0, tile 0
 
     const int SHIFT_SPEED = 1;
-    BackgroundPoint backgroundShift = {128, 248};
+    BackgroundPoint bg_shift = {128, 248};
     u32 frames = 0;
     int player_frame = 0;
     while (TRUE)
@@ -51,12 +51,12 @@ int main()
         vid_vsync();
         frames++;
 
-        KeyState inputState = getInputState();
-        int ymove = getYAxis(inputState);
-        int xmove = getXAxis(inputState);
-        backgroundShift.y += ymove * SHIFT_SPEED;
-        backgroundShift.x += xmove * SHIFT_SPEED;
-        map_shift(map, backgroundShift);
+        KeyState input_st = getinput_st();
+        int ymove = get_y_axis(input_st);
+        int xmove = get_x_axis(input_st);
+        bg_shift.y += ymove * SHIFT_SPEED;
+        bg_shift.x += xmove * SHIFT_SPEED;
+        map_shift(map, bg_shift);
 
         bool moving = (ymove != 0 || xmove != 0);
         if (moving)
