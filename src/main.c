@@ -31,13 +31,14 @@ int main()
     u32 eggcat_pal_len;
     const u32 *eggcat_pal = gbfs_get_obj(gbfs_dat, "egg.pal.bin", &eggcat_pal_len);
     memcpy(&tile_mem[4][0], eggcat_img, eggcat_img_len);
-    memcpy(pal_obj_mem, eggcat_pal, eggcat_pal_len);
+    memcpy(&pal_obj_bank[0], eggcat_pal, eggcat_pal_len);
 
     int px = SCREEN_WIDTH / 2 - 8, py = SCREEN_HEIGHT / 2 - 8;
     u32 tid = 0, pb = 0;
     OBJ_ATTR *player = &obj_buffer[0];
+    int player_attr0 = ATTR0_SQUARE | ATTR0_8BPP;
     obj_set_attr(player,
-                 ATTR0_SQUARE,             // Square, regular sprite
+                 player_attr0,             // Square, regular sprite
                  ATTR1_SIZE_16,            // 16x16p,
                  ATTR2_PALBANK(pb) | tid); // palbank 0, tile 0
 
@@ -72,7 +73,7 @@ int main()
             player_frame = 0;
         }
 
-        obj_set_attr(player, ATTR0_SQUARE, ATTR1_SIZE_16, ATTR2_PALBANK(pb) | player_frame * 4);
+        obj_set_attr(player, player_attr0, ATTR1_SIZE_16, ATTR2_PALBANK(pb) | player_frame * 8);
 
         obj_set_pos(player, px, py);
         oam_copy(oam_mem, obj_buffer, 1); // only need to update one
