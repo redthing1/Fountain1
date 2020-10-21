@@ -47,6 +47,7 @@ int main()
     int player_frame = 0;
     while (TRUE)
     {
+        while(KEY_DOWN_NOW(KEY_START)); // pause with start
         vid_vsync();
         frames++;
 
