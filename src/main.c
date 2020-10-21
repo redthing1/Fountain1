@@ -43,14 +43,31 @@ int main()
 
     const int SHIFT_SPEED = 1;
     BackgroundPoint backgroundShift = {128, 248};
+    u32 frames = 0;
+    int player_frame = 0;
     while (TRUE)
     {
         vid_vsync();
+        frames++;
 
         KeyState inputState = getInputState();
-        backgroundShift.y += getYAxis(inputState) * SHIFT_SPEED;
-        backgroundShift.x += getXAxis(inputState) * SHIFT_SPEED;
+        int ymove = getYAxis(inputState);
+        int xmove = getXAxis(inputState);
+        backgroundShift.y += ymove * SHIFT_SPEED;
+        backgroundShift.x += xmove * SHIFT_SPEED;
         shiftMap(map, backgroundShift);
+
+        bool moving = (ymove != 0 || xmove != 0);
+        if (moving) {
+            // when running
+            if (frames % 6 == 0) {
+                player_frame = (player_frame + 1) % 4;
+            }
+        } else {
+            player_frame = 0;
+        }
+
+        obj_set_attr(player, ATTR0_SQUARE, ATTR1_SIZE_16, ATTR2_PALBANK(pb) | player_frame * 4);
 
         obj_set_pos(player, px, py);
         oam_copy(oam_mem, obj_buffer, 1); // only need to update one
