@@ -11,18 +11,18 @@ const GBFS_FILE *gbfs_dat;
 Map loadMap()
 {
     u32 mapDataSize = 0;
-    const u16 *mapData = gbfs_get_obj(gbfs_dat, "fountain.bin", &mapDataSize);
+    const u16 *map_data = gbfs_get_obj(gbfs_dat, "fountain.bin", &mapDataSize);
 
-    return loadMapFromROM(mapData);
+    return map_load_from_rom(map_data);
 }
 
 int main()
 {
     gbfs_dat = find_first_gbfs_file(find_first_gbfs_file);
 
-    initMapRegisters();
+    map_init_registers();
     Map map = loadMap();
-    setMapOnScreen(map);
+    map_set_onscreen(map);
 
     oam_init(obj_buffer, 128);
     REG_DISPCNT |= DCNT_OBJ | DCNT_OBJ_1D;
@@ -56,7 +56,7 @@ int main()
         int xmove = getXAxis(inputState);
         backgroundShift.y += ymove * SHIFT_SPEED;
         backgroundShift.x += xmove * SHIFT_SPEED;
-        shiftMap(map, backgroundShift);
+        map_shift(map, backgroundShift);
 
         bool moving = (ymove != 0 || xmove != 0);
         if (moving)

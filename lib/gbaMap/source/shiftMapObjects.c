@@ -1,7 +1,7 @@
 #include "gbamap_object.h"
 #include "./types.h"
 
-void shiftMapObjects(MapObject* objects, ObjectPoint shift, u32 count)
+void map_shift_objects(MapObject* objects, ObjectPoint shift, u32 count)
 {
     for (u32 index = 0; index < count; index++)
     {

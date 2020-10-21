@@ -1,9 +1,9 @@
 #include "gbamap_object.h"
 #include "./types.h"
 
-ObjectPoint loadPosition(const u16* positionData, u16* index) {
+ObjectPoint map_load_object_position(const u16* positionData, u16* index) {
     ObjectPoint position;
-    position.x = popValue(positionData, index);
-    position.y = popValue(positionData, index);
+    position.x = map_pop_value(positionData, index);
+    position.y = map_pop_value(positionData, index);
     return position;
 }

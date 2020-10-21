@@ -29,11 +29,11 @@ typedef struct {
 #define ENTRIES_IN_SCREEN_BLOCK 512
 #define NUM_SCREEN_BLOCKS 31
 
-Map loadMapFromROM(const unsigned short *mapData);
+Map map_load_from_rom(const unsigned short *map_data);
 
-void initMapRegisters();
-void setMapOnScreen(Map map);
-void shiftMap(Map map, BackgroundPoint offset);
-void shiftMapLayer(unsigned short layer, BackgroundPoint offset);
+void map_init_registers();
+void map_set_onscreen(Map map);
+void map_shift(Map map, BackgroundPoint offset);
+void map_shift_layer(unsigned short layer, BackgroundPoint offset);
 
 #endif

@@ -1,8 +1,8 @@
 #include "gbamap.h"
 #include "./background.h"
 
-void shiftMap(Map map, BackgroundPoint offset)
+void map_shift(Map map, BackgroundPoint offset)
 {
     for (u16 layer = 0; layer < map.numLayers; layer++)
-        shiftMapLayer(layer, offset);
+        map_shift_layer(layer, offset);
 }

@@ -13,12 +13,12 @@ typedef struct
     const char* type;
 } MapObject;
 
-MapObject loadObject(const unsigned short* objectData, unsigned short* index);
-unsigned int loadObjectID(const unsigned short* idData, unsigned short* index);
-ObjectPoint loadPosition(const unsigned short* positionData, unsigned short* index);
-const char* loadString(const unsigned short* stringData, unsigned short* index);
-unsigned short popValue(const unsigned short* data, unsigned short* index);
+MapObject map_load_object(const unsigned short* object_data, unsigned short* index);
+unsigned int map_load_object_id(const unsigned short* idData, unsigned short* index);
+ObjectPoint map_load_object_position(const unsigned short* positionData, unsigned short* index);
+const char* map_load_string(const unsigned short* stringData, unsigned short* index);
+unsigned short map_pop_value(const unsigned short* data, unsigned short* index);
 
-void shiftMapObjects(MapObject* objects, ObjectPoint shift, unsigned int count);
+void map_shift_objects(MapObject* objects, ObjectPoint shift, unsigned int count);
 
 #endif

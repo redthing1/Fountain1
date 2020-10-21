@@ -2,7 +2,7 @@
 #include "gbamap.h"
 #include <string.h>
 
-void setMapOnScreen(Map map) {
+void map_set_onscreen(Map map) {
     memcpy(MEMORY_BACKGROUND_PALETTE, map.palette, map.paletteLength * 2);
     memcpy(&MEMORY_CHAR_BLOCK[0][0], map.tileSet, map.tileSetLength * 2);
 
