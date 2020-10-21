@@ -5,6 +5,7 @@
 #include "gbfs.h"
 
 OBJ_ATTR obj_buffer[128];
+OBJ_AFFINE *obj_aff_buffer = (OBJ_AFFINE *)obj_buffer;
 const GBFS_FILE *gbfs_dat;
 
 Map loadMap()
@@ -58,12 +59,16 @@ int main()
         shiftMap(map, backgroundShift);
 
         bool moving = (ymove != 0 || xmove != 0);
-        if (moving) {
+        if (moving)
+        {
             // when running
-            if (frames % 6 == 0) {
+            if (frames % 6 == 0)
+            {
                 player_frame = (player_frame + 1) % 4;
             }
-        } else {
+        }
+        else
+        {
             player_frame = 0;
         }
 
