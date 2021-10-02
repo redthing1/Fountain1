@@ -10,6 +10,7 @@ SPECS      := -specs=gba.specs
 
 # Compilation settings
 
+export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 CROSS	?= arm-none-eabi-
 AS	:= $(CROSS)as
 CC	:= $(CROSS)gcc
