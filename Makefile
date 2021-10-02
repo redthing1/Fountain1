@@ -1,4 +1,4 @@
-PATH := $(DEVKITARM)/bin:$(PATH)
+export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 
 #  Project settings
 
@@ -10,7 +10,6 @@ SPECS      := -specs=gba.specs
 
 # Compilation settings
 
-export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 CROSS	?= arm-none-eabi-
 AS	:= $(CROSS)as
 CC	:= $(CROSS)gcc
