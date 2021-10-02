@@ -1,78 +1,147 @@
-PATH := $(DEVKITARM)/bin:$(PATH)
+#
+# Template tonc makefile
+#
+# Yoinked mostly from DKP's template
+#
 
-#  Project settings
+# === SETUP ===========================================================
 
-NAME       := Fountain
-SOURCE_DIR := src
-LIB_DIR    := lib
-DATA_DIR   := asset
-SPECS      := -specs=gba.specs
+# --- Main path ---
 
-# Compilation settings
+export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 
-CROSS	?= arm-none-eabi-
-AS	:= $(CROSS)as
-CC	:= $(CROSS)gcc
-LD	:= $(CROSS)gcc
-OBJCOPY	:= $(CROSS)objcopy
+# === PROJECT DETAILS =================================================
+# PROJ		: Base project name
+# TITLE		: Title for ROM header (12 characters)
+# LIBS		: Libraries to use, formatted as list for linker flags
+# BUILD		: Directory for build process temporaries. Should NOT be empty!
+# SRCDIRS	: List of source file directories
+# DATADIRS	: List of data file directories
+# INCDIRS	: List of header file directories
+# LIBDIRS	: List of library directories
+# General note: use `.' for the current dir, don't leave the lists empty.
 
-ARCH	:= -mthumb-interwork -mthumb
+export PROJ	?= $(notdir $(CURDIR))
+TITLE		:= $(PROJ)
 
-INCFLAGS := -I$(DEVKITPRO)/libtonc/include -I$(LIB_DIR)/gbfs/include -I$(LIB_DIR)/gbaMap/include
-LIBFLAGS := -L$(DEVKITPRO)/libtonc/lib -ltonc -L$(LIB_DIR)/gbfs/lib -lgbfs -L$(LIB_DIR)/gbaMap/lib -lgbaMap
-ASFLAGS	:= -mthumb-interwork
-CFLAGS	:= $(ARCH) -O2 -Wall -fno-strict-aliasing $(INCFLAGS) $(LIBFLAGS)
-LDFLAGS	:= $(ARCH) $(SPECS) $(LIBFLAGS)
+LIBS		:= -ltonc
 
-.PHONY : build clean
+BUILD		:= build
+SRCDIRS		:= src
+DATADIRS	:= data
+INCDIRS		:= $(DEVKITPRO)/libtonc/include
+LIBDIRS		:= $(DEVKITPRO)/libtonc
 
-# Find and predetermine all relevant source files
+# --- switches ---
 
-APP_MAIN_SOURCE := $(shell find $(SOURCE_DIR) -name '*main.c')
-APP_MAIN_OBJECT := $(APP_MAIN_SOURCE:%.c=%.o)
-APP_SOURCES     := $(shell find $(SOURCE_DIR) -name '*.c' ! -name "*main.c"  ! -name "*.test.c")
-APP_OBJECTS     := $(APP_SOURCES:%.c=%.o)
+bMB		:= 0	# Multiboot build
+bTEMPS	:= 0	# Save gcc temporaries (.i and .s files)
+bDEBUG2	:= 0	# Generate debug info (bDEBUG2? Not a full DEBUG flag. Yet)
 
-# Build commands and dependencies
 
-build: libs $(NAME).gba
+# --- Create include and library search paths ---
+export INCLUDE	:=	$(foreach dir,$(INCDIRS),-I$(dir))	\
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include)		\
+					-I$(CURDIR)/$(BUILD)
+ 
+export LIBPATHS	:=	-L$(CURDIR) $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
-no-content: libs $(NAME)-no_content.gba
+# === BUILD FLAGS =====================================================
+# This is probably where you can stop editing
+# NOTE: I've noticed that -fgcse and -ftree-loop-optimize sometimes muck 
+#	up things (gcse seems fond of building masks inside a loop instead of 
+#	outside them for example). Removing them sometimes helps
 
-libs:
-	cd lib/gbaMap && make 
-	cd lib/gbfs && make
+# --- Architecture ---
 
-assets:
-	cd asset/build && make
+ARCH    := -mthumb-interwork -mthumb
+RARCH   := -mthumb-interwork -mthumb
+IARCH   := -mthumb-interwork -marm -mlong-calls
 
-$(NAME).gba : $(NAME)-no_content.gba $(NAME).gbfs
-	cat $^ > $(NAME).gba
+# --- Main flags ---
 
-$(NAME)-no_content.gba : $(NAME).elf
-	$(OBJCOPY) -v -O binary $< $@
-	-@gbafix $@ -t$(NAME)
-	padbin 256 $@
+CFLAGS		:= -mcpu=arm7tdmi -mtune=arm7tdmi -O2
+CFLAGS		+= -Wall
+CFLAGS		+= $(INCLUDE)
+CFLAGS		+= -ffast-math -fno-strict-aliasing
 
-$(NAME).elf : $(APP_OBJECTS) $(APP_MAIN_OBJECT)
-	$(LD) $^ $(LDFLAGS) -o $@
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
-$(APP_OBJECTS) : %.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+ASFLAGS		:= $(ARCH) $(INCLUDE)
+LDFLAGS 	:= $(ARCH) -Wl,-Map,$(PROJ).map
 
-$(APP_MAIN_OBJECT) : $(APP_MAIN_SOURCE)
-	$(CC) $(CFLAGS) -c $< -o $@
+# --- switched additions ----------------------------------------------
 
-$(NAME).gbfs: assets
-	gbfs $@ $(shell find $(DATA_DIR) -name '*.bin')
+# --- Multiboot ? ---
+ifeq ($(strip $(bMB)), 1)
+	TARGET	:= $(PROJ).mb
+else
+	TARGET	:= $(PROJ)
+endif
+
+# --- Save temporary files ? ---
+ifeq ($(strip $(bTEMPS)), 1)
+	CFLAGS		+= -save-temps
+	CXXFLAGS	+= -save-temps
+endif
+
+# --- Debug info ? ---
+
+ifeq ($(strip $(bDEBUG)), 1)
+	CFLAGS		+= -DDEBUG -g
+	CXXFLAGS	+= -DDEBUG -g
+	ASFLAGS		+= -DDEBUG -g
+	LDFLAGS		+= -g
+else
+	CFLAGS		+= -DNDEBUG
+	CXXFLAGS	+= -DNDEBUG
+	ASFLAGS		+= -DNDEBUG
+endif
+
+# === BUILD PROC ======================================================
+
+# Still in main dir: 
+# * Define/export some extra variables
+# * Invoke this file again from the build dir
+# PONDER: what happens if BUILD == "" ?
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export VPATH	:=									\
+	$(foreach dir, $(SRCDIRS) , $(CURDIR)/$(dir))	\
+	$(foreach dir, $(DATADIRS), $(CURDIR)/$(dir))
+
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+# --- List source and data files ---
+
+CFILES		:=	$(foreach dir, $(SRCDIRS) , $(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir, $(SRCDIRS) , $(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir, $(SRCDIRS) , $(notdir $(wildcard $(dir)/*.s)))
+BINFILES	:=	$(foreach dir, $(DATADIRS), $(notdir $(wildcard $(dir)/*.*)))
+
+# --- Define object file list ---
+export OFILES	:=	$(addsuffix .o, $(BINFILES))					\
+					$(CFILES:.c=.o) $(CPPFILES:.cpp=.o)				\
+					$(SFILES:.s=.o)
+
+# --- Set linker depending on C++ file existence ---
+include $(CURDIR)/tonc_rules.mk
+ifeq ($(strip $(CPPFILES)),)
+	export LD	:= $(CC)
+else
+	export LD	:= $(CXX)
+endif
+
+DEPENDS	:=	$(OFILES:.o=.d)
+
+# --- Main targets ----
+
+$(OUTPUT).gba	:	$(OUTPUT).elf
+
+$(OUTPUT).elf	:	$(OFILES)
+
+all: $(OUTPUT).gba
 
 clean:
-	@rm -fv *.gba
-	@rm -fv *.elf
-	@rm -fv *.sav
-	@rm -fv *.gbfs
-	@rm -rf $(APP_OBJECTS)
-	@rm -rf $(APP_MAIN_OBJECT)
-	cd lib/gbaMap && make clean
-	cd lib/gbfs && make clean
-	cd asset/build && make clean
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
