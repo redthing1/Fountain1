@@ -1,5 +1,3 @@
-export PATH	:=	$(DEVKITARM)/bin:$(PATH)
-
 #  Project settings
 
 NAME       := Fountain
@@ -9,6 +7,8 @@ LIB_DIR    := lib
 SPECS      := -specs=gba.specs
 
 # Compilation settings
+
+export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 
 CROSS	?= arm-none-eabi-
 AS	:= $(CROSS)as
