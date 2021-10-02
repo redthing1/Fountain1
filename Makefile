@@ -5,7 +5,7 @@ PATH := $(DEVKITARM)/bin:$(PATH)
 NAME       := Fountain
 SOURCE_DIR := src
 LIB_DIR    := lib
-DATA_DIR   := asset
+# DATA_DIR   := asset
 SPECS      := -specs=gba.specs
 
 # Compilation settings
@@ -18,8 +18,8 @@ OBJCOPY	:= $(CROSS)objcopy
 
 ARCH	:= -mthumb-interwork -mthumb
 
-INCFLAGS := -I$(DEVKITPRO)/libtonc/include -I$(LIB_DIR)/gbfs/include -I$(LIB_DIR)/gbaMap/include
-LIBFLAGS := -L$(DEVKITPRO)/libtonc/lib -ltonc -L$(LIB_DIR)/gbfs/lib -lgbfs -L$(LIB_DIR)/gbaMap/lib -lgbaMap
+INCFLAGS := -I$(DEVKITPRO)/libtonc/include
+LIBFLAGS := -L$(DEVKITPRO)/libtonc/lib -ltonc
 ASFLAGS	:= -mthumb-interwork
 CFLAGS	:= $(ARCH) -O2 -Wall -fno-strict-aliasing $(INCFLAGS) $(LIBFLAGS)
 LDFLAGS	:= $(ARCH) $(SPECS) $(LIBFLAGS)
@@ -40,13 +40,12 @@ build: libs $(NAME).gba
 no-content: libs $(NAME)-no_content.gba
 
 libs:
-	cd lib/gbaMap && make 
-	cd lib/gbfs && make
+	@true
 
 assets:
-	cd asset/build && make
+	@true
 
-$(NAME).gba : $(NAME)-no_content.gba $(NAME).gbfs
+$(NAME).gba : $(NAME)-no_content.gba
 	cat $^ > $(NAME).gba
 
 $(NAME)-no_content.gba : $(NAME).elf
@@ -63,8 +62,8 @@ $(APP_OBJECTS) : %.o : %.c
 $(APP_MAIN_OBJECT) : $(APP_MAIN_SOURCE)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME).gbfs: assets
-	gbfs $@ $(shell find $(DATA_DIR) -name '*.bin')
+# $(NAME).gbfs: assets
+# 	gbfs $@ $(shell find $(DATA_DIR) -name '*.bin')
 
 clean:
 	@rm -fv *.gba
@@ -73,6 +72,3 @@ clean:
 	@rm -fv *.gbfs
 	@rm -rf $(APP_OBJECTS)
 	@rm -rf $(APP_MAIN_OBJECT)
-	cd lib/gbaMap && make clean
-	cd lib/gbfs && make clean
-	cd asset/build && make clean
