@@ -56,9 +56,6 @@ $(NAME)-no_content.gba : $(NAME).elf
 $(NAME).elf : $(APP_OBJECTS) $(APP_MAIN_OBJECT)
 	$(LD) $^ $(LDFLAGS) -o $@
 
-$(APP_OBJECTS) : %.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
 $(APP_MAIN_OBJECT) : $(APP_MAIN_SOURCE)
 	$(CC) $(CFLAGS) -c $< -o $@
 
