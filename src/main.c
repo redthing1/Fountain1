@@ -6,5 +6,8 @@ OBJ_AFFINE *obj_aff_buffer = (OBJ_AFFINE *)obj_buffer;
 
 int main()
 {
-    pal_bg_mem[0] = CLR_RED;
+    REG_DISPCNT = DCNT_MODE0;
+    REG_DISPCNT |= DCNT_BG0;
+
+    pal_bg_mem[0] = CLR_BLUE;
 }
