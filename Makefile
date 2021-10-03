@@ -38,6 +38,15 @@ bMB		:= 0	# Multiboot build
 bTEMPS	:= 0	# Save gcc temporaries (.i and .s files)
 bDEBUG2	:= 0	# Generate debug info (bDEBUG2? Not a full DEBUG flag. Yet)
 
+PREFIX		?=	arm-none-eabi-
+
+export CC	:=	$(PREFIX)gcc
+export LD	:=	$(PREFIX)gcc
+export CXX	:=	$(PREFIX)g++
+export AS	:=	$(PREFIX)as
+export AR	:=	$(PREFIX)ar
+export NM	:=	$(PREFIX)nm
+export OBJCOPY	:=	$(PREFIX)objcopy
 
 # --- Create include and library search paths ---
 export INCLUDE	:=	$(foreach dir,$(INCDIRS),-I$(dir))	\
@@ -125,12 +134,66 @@ export OFILES	:=	$(addsuffix .o, $(BINFILES))					\
 					$(SFILES:.s=.o)
 
 # --- Set linker depending on C++ file existence ---
-include $(CURDIR)/tonc_rules.mk
-ifeq ($(strip $(CPPFILES)),)
-	export LD	:= $(CC)
-else
-	export LD	:= $(CXX)
-endif
+%.gba : %.elf
+	@$(OBJCOPY) -O binary $< $@
+	@echo built ... $(notdir $@)
+	@gbafix $@ -t$(TITLE)
+
+#----------------------------------------------------------------------
+
+%.mb.elf :
+	@echo Linking multiboot
+	$(LD) -specs=gba_mb.specs $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
+	$(NM) -Sn $@ > $(basename $(notdir $@)).map
+
+#----------------------------------------------------------------------
+
+%.elf :
+	@echo Linking cartridge
+	$(LD) -specs=gba.specs $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@	
+	$(NM) -Sn $@ > $(basename $(notdir $@)).map
+
+#----------------------------------------------------------------------
+
+%.a :
+	@echo $(notdir $@)
+	@rm -f $@
+	$(AR) -crs $@ $^
+
+# === OBJECTIFY =======================================================
+
+%.iwram.o : %.iwram.cpp
+	@echo $(notdir $<)
+	$(CXX) $(CXXFLAGS) $(IARCH) -c $< -o $@
+	
+#----------------------------------------------------------------------
+%.iwram.o : %.iwram.c
+	@echo $(notdir $<)
+	$(CC) $(CFLAGS) $(IARCH) -c $< -o $@
+
+#----------------------------------------------------------------------
+
+%.o : %.cpp
+	@echo $(notdir $<)
+	$(CXX) $(CXXFLAGS) $(RARCH) -c $< -o $@
+
+#----------------------------------------------------------------------
+
+%.o : %.c
+	@echo $(notdir $<)
+	$(CC) $(CFLAGS) $(RARCH) -c $< -o $@
+
+#----------------------------------------------------------------------
+
+%.o : %.s
+	@echo $(notdir $<)
+	$(CC) -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
+
+#----------------------------------------------------------------------
+
+%.o : %.S
+	@echo $(notdir $<)
+	$(CC) -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
 
 DEPENDS	:=	$(OFILES:.o=.d)
 
