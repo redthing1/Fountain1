@@ -5,7 +5,7 @@
 
 export PATH	:=	$(DEVKITARM)/bin:$(PATH)
 
-LIBGBA		?=	$(DEVKITPRO)/libgba
+# LIBGBA		?=	$(DEVKITPRO)/libgba
 
 # --- Executable names ---
 
@@ -49,41 +49,40 @@ export OBJCOPY	:=	$(PREFIX)objcopy
 	@rm -f $@
 	$(AR) -crs $@ $^
 
-
 # === OBJECTIFY =======================================================
 
 %.iwram.o : %.iwram.cpp
 	@echo $(notdir $<)
-	$(CXX) -MMD -MP -MF $(DEPSDIR)/$*.d $(CXXFLAGS) $(IARCH) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(IARCH) -c $< -o $@
 	
 #----------------------------------------------------------------------
 %.iwram.o : %.iwram.c
 	@echo $(notdir $<)
-	$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d $(CFLAGS) $(IARCH) -c $< -o $@
+	$(CC) $(CFLAGS) $(IARCH) -c $< -o $@
 
 #----------------------------------------------------------------------
 
 %.o : %.cpp
 	@echo $(notdir $<)
-	$(CXX) -MMD -MP -MF $(DEPSDIR)/$*.d $(CXXFLAGS) $(RARCH) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(RARCH) -c $< -o $@
 
 #----------------------------------------------------------------------
 
 %.o : %.c
 	@echo $(notdir $<)
-	$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d $(CFLAGS) $(RARCH) -c $< -o $@
+	$(CC) $(CFLAGS) $(RARCH) -c $< -o $@
 
 #----------------------------------------------------------------------
 
 %.o : %.s
 	@echo $(notdir $<)
-	$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
+	$(CC) -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
 
 #----------------------------------------------------------------------
 
 %.o : %.S
 	@echo $(notdir $<)
-	$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
+	$(CC) -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
 
 
 #----------------------------------------------------------------------
